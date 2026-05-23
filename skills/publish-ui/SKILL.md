@@ -17,7 +17,12 @@ After the build passes and the user wants the UI live — either a throwaway **p
 **production** deploy.
 
 ## Prerequisites
-- `VERCEL_TOKEN` env var (a Vercel access token). Optional `VERCEL_TEAM_ID` for team scopes.
+- `VERCEL_TOKEN` env var — a Vercel access token **with deploy scope** (full access, and a team
+  role of Member/Owner). A read-only / restricted token returns `403 forbidden` on file upload
+  ("You don't have permission to create the resource"); the tool detects this and tells the user
+  to issue a properly-scoped token.
+- Team scope is **auto-resolved** from the token's account `defaultTeamId` (required for Vercel
+  "northstar" team accounts). Override with `VERCEL_TEAM_ID` or `--team` for a different team.
 - A successful dashboard build producing static output at `artifacts/dashboard/dist/public`.
 
 ## Methodology

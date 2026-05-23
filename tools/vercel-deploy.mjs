@@ -10,9 +10,11 @@
  *     [--prod] [--team <teamId>]
  *
  * Flow (per Vercel docs):
+ *   0) Resolve scope: if --team/VERCEL_TEAM_ID is not set, read GET /v2/user and use the
+ *      account's defaultTeamId (required for "northstar" team accounts).
  *   1) For each file: sha1 + size; upload bytes to POST /v2/files (deduped by digest).
  *   2) POST /v13/deployments with the file manifest + SPA fallback routing.
- * Prints a JSON result with the live url. Exits non-zero on failure.
+ * Prints a JSON result with the live url. Exits non-zero on failure, with guidance on 403s.
  */
 import { readdir, readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
@@ -47,25 +49,49 @@ async function walk(dir) {
   return out;
 }
 
+const SCOPE_HELP =
+  "The token is valid but lacks permission to create projects/deployments. Use a Vercel\n" +
+  "  access token with deploy scope: Vercel dashboard → Settings → Tokens → create a token\n" +
+  "  scoped to the right Team with full access (not a read-only / restricted token), and make\n" +
+  "  sure your role on that team can create projects (Member/Owner, not Viewer).";
+
+function fail(msg, code = 1) {
+  console.error(`error: ${msg}`);
+  process.exit(code);
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const token = process.env.VERCEL_TOKEN;
-  const team = args.team || process.env.VERCEL_TEAM_ID || "";
   const dir = args.dir || args.build_dir || "artifacts/dashboard/dist/public";
   const name = args.name || args.project_name || "agenticos-dashboard";
   const prod = Boolean(args.prod);
-  const q = team ? `?teamId=${encodeURIComponent(team)}` : "";
+  let team = args.team || process.env.VERCEL_TEAM_ID || "";
 
-  if (!token) {
-    console.error("error: VERCEL_TOKEN environment variable is required");
-    process.exit(1);
+  if (!token) fail("VERCEL_TOKEN environment variable is required");
+
+  const authHeaders = { Authorization: `Bearer ${token}` };
+
+  // 0) Resolve team scope. Northstar/team accounts reject personal-scope writes.
+  if (!team) {
+    const who = await fetch(`${API}/v2/user`, { headers: authHeaders });
+    if (!who.ok) {
+      fail(`token check failed (${who.status}). Is VERCEL_TOKEN valid? ${await who.text()}`);
+    }
+    const u = (await who.json()).user || {};
+    if (u.defaultTeamId) {
+      team = u.defaultTeamId;
+      console.error(`[vercel-deploy] no --team given; using account defaultTeamId ${team} (${u.email || u.username || "?"})`);
+    } else {
+      console.error(`[vercel-deploy] deploying in personal scope for ${u.email || u.username || "?"}`);
+    }
   }
+  const q = team ? `?teamId=${encodeURIComponent(team)}` : "";
 
   const paths = await walk(dir);
   if (paths.length === 0) {
-    console.error(`error: no files found in "${dir}". Build the dashboard first ` +
+    fail(`no files found in "${dir}". Build the dashboard first ` +
       `(pnpm --filter @workspace/dashboard build).`);
-    process.exit(1);
   }
 
   // 1) Upload files (dedup by sha1).
@@ -80,17 +106,12 @@ async function main() {
     uploaded.add(sha);
     const res = await fetch(`${API}/v2/files${q}`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/octet-stream",
-        "x-vercel-digest": sha,
-      },
+      headers: { ...authHeaders, "Content-Type": "application/octet-stream", "x-vercel-digest": sha },
       body: data,
     });
-    if (!res.ok && res.status !== 409) {
-      console.error(`error: upload failed for ${file}: ${res.status} ${await res.text()}`);
-      process.exit(1);
-    }
+    if (res.ok || res.status === 409) continue;
+    if (res.status === 403) fail(`file upload forbidden (403).\n  ${SCOPE_HELP}`);
+    fail(`upload failed for ${file}: ${res.status} ${await res.text()}`);
   }
 
   // 2) Create the deployment with SPA filesystem-then-index fallback.
@@ -103,13 +124,13 @@ async function main() {
   };
   const res = await fetch(`${API}/v13/deployments${q}`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    headers: { ...authHeaders, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  const out = await res.json();
+  const out = await res.json().catch(() => ({}));
   if (!res.ok) {
-    console.error(`error: deployment failed: ${res.status} ${JSON.stringify(out)}`);
-    process.exit(1);
+    if (res.status === 403) fail(`deployment forbidden (403).\n  ${SCOPE_HELP}`);
+    fail(`deployment failed: ${res.status} ${JSON.stringify(out)}`);
   }
 
   const result = {
@@ -119,11 +140,9 @@ async function main() {
     readyState: out.readyState ?? out.status ?? null,
     target: prod ? "production" : "preview",
     files: manifest.length,
+    teamId: team || null,
   };
   console.log(JSON.stringify(result, null, 2));
 }
 
-main().catch((err) => {
-  console.error(`error: ${err?.stack || err}`);
-  process.exit(1);
-});
+main().catch((err) => fail(err?.stack || String(err)));
