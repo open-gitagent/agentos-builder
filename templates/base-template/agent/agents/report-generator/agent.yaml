@@ -1,0 +1,25 @@
+# Report-generator sub-agent — drafts formatted summaries from analyzed data.
+# Repurpose for your domain. Keep the directory name in sync with how the
+# parent agent references it.
+spec_version: "0.1.0"
+name: report-generator
+version: 1.0.0
+description: >
+  Report-generator sub-agent. Drafts formatted summaries and reports from
+  analyzed data so a reviewer can finalize them.
+
+model:
+  preferred: "anthropic:claude-sonnet-4-20250514"
+  constraints:
+    temperature: 0.4
+    max_tokens: 4096
+
+tools: [read, write]
+
+skills:
+  - example-skill
+
+compliance:
+  risk_level: standard
+  human_in_the_loop: false
+  data_classification: internal

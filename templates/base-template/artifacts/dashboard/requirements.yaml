@@ -1,0 +1,21 @@
+packages:
+  "framer-motion": "For premium page transitions, animated KPI cards, and skill active states"
+  "react-markdown": "To render rich text and tables from the agent's markdown responses"
+  "remark-gfm": "Plugin for react-markdown to support GitHub Flavored Markdown tables"
+  "react-syntax-highlighter": "To provide VS Code-like syntax highlighting in the File System view"
+  "@types/react-syntax-highlighter": "Types for syntax highlighter"
+  "clsx": "Utility for conditionally joining classNames"
+  "tailwind-merge": "Utility to safely merge Tailwind CSS classes"
+  "date-fns": "For formatting timestamps in the activity feed"
+
+images:
+  - path: "artifacts/dashboard/public/images/logo-mark.png"
+    description: "Minimalist, abstract geometric logo mark on a transparent background, representing artificial intelligence and data."
+    aspect_ratio: "1:1"
+  - path: "artifacts/dashboard/public/images/dashboard-glow.png"
+    description: "Subtle, abstract ambient glow background suitable for an enterprise dashboard."
+    aspect_ratio: "16:9"
+
+notes:
+  - Project uses generated API hooks from @workspace/api-client-react.
+  - Chat SSE stream must be handled with a custom fetch implementation since Orval cannot generate hooks for text/event-stream responses.

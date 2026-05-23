@@ -1,0 +1,38 @@
+# Example workflow — a sequence of steps the agent can run on a schedule or trigger.
+# Copy this file to create your own workflows. Each step has an id, description,
+# an optional skill to invoke, and optional dependencies on prior steps.
+name: example-workflow
+description: A generic, scheduled workflow that loads example data, analyzes it, and reports a summary.
+trigger: schedule
+schedule: "0 9 * * 1"  # every Monday at 09:00 — adjust to your needs
+
+steps:
+  - id: load-data
+    description: Load the example journey datasets from the knowledge base
+    owner: operations
+    status: pending
+
+  - id: validate-data
+    description: Validate that the expected columns are present and parseable
+    owner: operations
+    status: pending
+    depends_on: [load-data]
+
+  - id: analyze
+    description: Aggregate the records by category and flag non-active rows
+    owner: analysis
+    skill: example-skill
+    status: pending
+    depends_on: [validate-data]
+
+  - id: review
+    description: Reviewer checks the analysis output for accuracy
+    owner: reviewer
+    status: pending
+    depends_on: [analyze]
+
+  - id: report
+    description: Produce and distribute the summary report
+    owner: analysis
+    status: pending
+    depends_on: [review]

@@ -1,0 +1,11 @@
+id,name,category,value,status,date
+R-001,Kilo,operations,640,active,2026-02-01
+R-002,Lima,analysis,1120,active,2026-02-02
+R-003,Mike,support,380,review,2026-02-03
+R-004,November,operations,990,active,2026-02-04
+R-005,Oscar,analysis,720,closed,2026-02-05
+R-006,Papa,support,1450,active,2026-02-06
+R-007,Quebec,operations,300,review,2026-02-07
+R-008,Romeo,analysis,860,active,2026-02-08
+R-009,Sierra,support,1075,active,2026-02-09
+R-010,Tango,operations,540,closed,2026-02-10

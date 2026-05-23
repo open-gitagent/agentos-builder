@@ -1,0 +1,34 @@
+# Hooks — run automatically before tool use and after responses.
+# Genericize the checks below for your domain. Keep the structure.
+pre_tool_use:
+  - name: compliance-check
+    description: Validate that the requested tool action does not violate policy
+    conditions:
+      - tool: write
+        check: data_classification
+        action: require_approval_if_confidential
+      - tool: cli
+        check: command_allowlist
+        action: block_if_not_allowed
+
+post_response:
+  - name: audit-log
+    description: Log all agent responses for the audit trail
+    actions:
+      - append_to_memory
+      - log_to_audit_trail
+    retention: 365
+
+  - name: sensitivity-scan
+    description: Scan the response for sensitive data before delivery
+    checks:
+      - ssn_pattern
+      - credit_card_pattern
+      - email_pattern
+    action: redact_and_warn
+
+  - name: compliance-flag
+    description: Flag responses that reference policy or review matters
+    triggers:
+      - keywords: [escalation, approval, confidential, review]
+    action: add_compliance_review_tag

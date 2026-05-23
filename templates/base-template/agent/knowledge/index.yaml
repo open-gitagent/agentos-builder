@@ -1,0 +1,27 @@
+# Knowledge index — catalogs the files the agent can load.
+# Each entry: path (relative to knowledge/), tags (for retrieval), priority,
+# and always_load (true = loaded every session; false = loaded on demand).
+# Add your own datasets here as you replace the example content.
+entries:
+  - path: org-structure.md
+    tags: [organization, departments, roles, team, structure]
+    priority: high
+    always_load: true
+  - path: guidelines.md
+    tags: [guidelines, policies, standards, operating-rules]
+    priority: high
+    always_load: true
+
+  - path: example-data.json
+    tags: [example, reference, records, sample]
+    priority: medium
+    always_load: false
+
+  - path: journey-data/example-journey/sample.csv
+    tags: [example-journey, sample, records, csv]
+    priority: high
+    always_load: false
+  - path: journey-data/example-journey/records.csv
+    tags: [example-journey, records, dataset, csv]
+    priority: high
+    always_load: false

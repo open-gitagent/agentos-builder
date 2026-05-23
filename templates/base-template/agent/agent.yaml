@@ -1,0 +1,54 @@
+# =============================================================================
+# Agent Manifest (agent.yaml)
+# -----------------------------------------------------------------------------
+# This is a DOMAIN-AGNOSTIC base template. Customize every field below for your
+# own use case: rename the agent, rewrite the description, add your own skills
+# under skills/, and tune the model/compliance blocks to match your needs.
+# The single included example (example-skill / example-journey) is here only to
+# demonstrate the wiring end-to-end. Replace or remove it once you add your own.
+# =============================================================================
+
+spec_version: "0.1.0"
+name: agentic-os-template
+version: 1.0.0
+description: >
+  A clean, domain-agnostic base template for building a GitClaw agent. It ships
+  with one worked example skill and journey so you can see how skills, knowledge,
+  workflows, compliance, hooks, memory, and sub-agents fit together. Replace the
+  example content with your own domain to turn this into a production agent.
+
+model:
+  preferred: "anthropic:claude-sonnet-4-6-20250627"
+  fallback:
+    - "anthropic:claude-sonnet-4-20250514"
+  constraints:
+    temperature: 0.3
+    max_tokens: 4096
+
+tools: [cli, read, write, memory]
+
+# Add one entry per skill directory under skills/. Each must have a SKILL.md
+# with valid YAML frontmatter (name + description) or GitClaw will skip it.
+skills:
+  - example-skill
+
+runtime:
+  max_turns: 30
+  timeout: 120
+
+delegation:
+  mode: auto
+
+# Generic compliance block. Tune risk_level, frameworks, retention, and
+# approvers to match your organization's policies.
+compliance:
+  risk_level: standard
+  human_in_the_loop: true
+  data_classification: internal
+  frameworks: []  # e.g. ["your-frameworks-here"]
+  recordkeeping:
+    audit_logging: true
+    retention_days: 365
+  review:
+    cadence: quarterly
+    approvers: ["owner", "reviewer"]

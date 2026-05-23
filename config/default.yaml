@@ -1,0 +1,19 @@
+# Base config for agentos-builder. Override per environment with <env>.yaml (deep-merged).
+log_level: info
+audit_logging: true
+compliance_mode: advisory        # advisory | strict (strict blocks delivery on conformance failure)
+
+build:
+  base_template_path: "templates/base-template"
+  default_target_dir: "../"            # where new AgenticOS builds are copied to
+  package_manager: "pnpm"
+  min_pnpm_version: "9.5.0"            # catalog: protocol support
+  verify:
+    typecheck: true
+    build: true
+    smoke_run: true
+  remove_example_on_finish: true        # delete example-journey/example-skill once real content exists
+
+defaults:
+  model: "anthropic:claude-sonnet-4-6"  # the runtime-supported model the built apps use
+  attribution: "Powered by Lyzr AgenticOS"

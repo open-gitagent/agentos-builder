@@ -1,0 +1,28 @@
+{
+  "formatId": "pra-sii-uk-q",
+  "startedAt": "2026-05-11T06:19:13.338Z",
+  "completedAt": "2026-05-11T06:19:15.844Z",
+  "fetched": [
+    {
+      "url": "https://www.eiopa.europa.eu/document-library/supervisory-statements/eiopa-data-point-model-and-xbrl-taxonomy",
+      "status": "cached",
+      "ms": 441,
+      "bytes": 60150
+    }
+  ],
+  "detectedVersion": "EIOPA-2.8.0-UK",
+  "cachedVersion": "EIOPA-2.7.0-UK",
+  "diffSummary": {
+    "added": 7,
+    "removed": 0,
+    "renamed": 6,
+    "ruleChanges": 3,
+    "affectedFacts": 13
+  },
+  "snapshotPath": "/home/runner/workspace/artifacts/api-server/.data/multi-filing/regulator-snapshots/pra-sii-uk-q/EIOPA-2.8.0-UK.json",
+  "remappingResult": {
+    "factsChecked": 15,
+    "mappingsValid": 15,
+    "mappingsBroken": 0
+  }
+}

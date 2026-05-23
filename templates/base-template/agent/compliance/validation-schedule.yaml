@@ -1,0 +1,24 @@
+# Validation schedule — generic placeholder.
+# Each item has a cadence (frequency), the next due date, an owner, and a status.
+# Replace these with the recurring checks that apply to your domain.
+schedule:
+  - name: Output Quality Review
+    frequency: quarterly
+    last_completed: "2026-01-15"
+    next_due: "2026-04-15"
+    owner: reviewer
+    status: scheduled
+
+  - name: Data Access Review
+    frequency: quarterly
+    last_completed: "2026-01-31"
+    next_due: "2026-04-30"
+    owner: owner
+    status: scheduled
+
+  - name: Audit Trail Integrity Check
+    frequency: monthly
+    last_completed: "2026-02-28"
+    next_due: "2026-03-31"
+    owner: reviewer
+    status: scheduled

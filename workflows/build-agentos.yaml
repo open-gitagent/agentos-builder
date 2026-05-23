@@ -1,0 +1,67 @@
+# SkillsFlow: build an AgenticOS end-to-end for a domain.
+# GitAgent Protocol workflow form (inputs + ordered steps with depends_on).
+name: build-agentos
+description: Turn a domain brief into a branded, domain-specific AgenticOS built on the base template.
+version: 1.0.0
+
+inputs:
+  - { name: domain,    type: string, required: true }   # e.g. "General Counsel's office"
+  - { name: company,   type: string, required: true }   # e.g. "Acme Corp"
+  - { name: branding,  type: object, required: true }    # { productName, colors, logo, fonts }
+  - { name: journeys,  type: array,  required: true }    # [{ id, title, goal }]
+  - { name: skills,    type: array,  required: false }
+  - { name: knowledge, type: array,  required: false }
+  - { name: compliance, type: object, required: false }  # { risk_tier, frameworks, hitl }
+
+steps:
+  - id: gather-requirements
+    action: interview
+    outputs: [brief]
+    # Confirm domain, company, branding, journeys, skills, knowledge, compliance. Don't guess branding.
+
+  - id: copy-template
+    action: shell
+    inputs: { command: "cp -R templates/base-template/ ${{ inputs.target }}/" }
+    depends_on: [gather-requirements]
+    outputs: [workdir]
+
+  - id: apply-branding
+    skill: apply-branding
+    depends_on: [copy-template]
+    inputs: { company: "${{ inputs.company }}", branding: "${{ inputs.branding }}" }
+
+  - id: define-identity
+    skill: scaffold-agentos
+    depends_on: [apply-branding]
+    inputs: { domain: "${{ inputs.domain }}", compliance: "${{ inputs.compliance }}" }
+
+  - id: add-skills
+    skill: author-skill
+    depends_on: [define-identity]
+    inputs: { skills: "${{ inputs.skills }}" }
+
+  - id: add-knowledge
+    skill: model-knowledge
+    depends_on: [define-identity]
+    inputs: { knowledge: "${{ inputs.knowledge }}" }
+
+  - id: scaffold-journeys
+    skill: design-journey
+    depends_on: [add-skills, add-knowledge]
+    inputs: { journeys: "${{ inputs.journeys }}" }
+
+  - id: populate-ui
+    action: edit
+    depends_on: [scaffold-journeys]
+    # Command Center metrics/cards, Observe sample data, and dashboard.ts handlers → domain content.
+
+  - id: remove-example
+    action: edit
+    depends_on: [scaffold-journeys]
+    # Delete example-journey + example-skill once real journeys/skills exist.
+
+  - id: verify
+    skill: gap-conformance
+    depends_on: [populate-ui, remove-example]
+    outputs: [report]
+    # pnpm run typecheck + build + smoke run; then GAP conformance report. Block delivery on failure.

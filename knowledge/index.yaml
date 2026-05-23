@@ -1,0 +1,24 @@
+# Knowledge index for agentos-builder (GitAgent Protocol `documents:` form).
+# These docs are the builder's context. The canonical, always-current build
+# steps live in templates/base-template/CLAUDE.md.
+documents:
+  - path: architecture.md
+    tags: [architecture, three-layer, gitclaw, sse, runtime]
+    priority: high
+    always_load: true
+  - path: using-the-base-template.md
+    tags: [base-template, scaffold, repo-map, claude-md]
+    priority: high
+    always_load: true
+  - path: journey-pattern.md
+    tags: [journey, pattern, pipeline, ai-conclusion, components]
+    priority: high
+    always_load: false
+  - path: gap-protocol.md
+    tags: [gitagent, protocol, gap, spec, manifest, compliance, skills]
+    priority: high
+    always_load: false
+  - path: branding-guide.md
+    tags: [branding, theme, logo, company, design-system]
+    priority: medium
+    always_load: false

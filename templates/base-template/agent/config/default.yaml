@@ -1,0 +1,25 @@
+# Default configuration — customize these values for your deployment.
+environment: production
+logging:
+  level: info
+  audit_trail: true
+  retention_days: 365
+
+# Generic significance thresholds the agent uses to decide when to alert or
+# escalate. Replace with values that make sense for your domain.
+thresholds:
+  significance_absolute: 1000
+  significance_relative_pct: 5
+  escalation_pct: 15
+  approval_limit: 100000
+
+reporting:
+  currency: USD
+  period_start: "01-01"
+  segments: [SegmentA, SegmentB, SegmentC]
+
+# Placeholder notification routing. Replace the role names with your own.
+notifications:
+  critical: [owner, reviewer]
+  warning: [reviewer]
+  info: [operations]

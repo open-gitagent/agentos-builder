@@ -1,0 +1,673 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: agent
+    description: Agent information and interaction
+  - name: dashboard
+    description: Dashboard data endpoints
+  - name: anthropic
+    description: Anthropic AI chat operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /agent/info:
+    get:
+      operationId: getAgentInfo
+      tags: [agent]
+      summary: Get agent manifest info
+      responses:
+        "200":
+          description: Agent info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentInfo"
+  /agent/skills:
+    get:
+      operationId: listAgentSkills
+      tags: [agent]
+      summary: List all agent skills
+      responses:
+        "200":
+          description: Skills list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AgentSkill"
+  /agent/skills/{name}:
+    get:
+      operationId: getAgentSkill
+      tags: [agent]
+      summary: Get full skill definition
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Skill detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentSkillDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /agent/files:
+    get:
+      operationId: getAgentFileTree
+      tags: [agent]
+      summary: Get agent file tree
+      responses:
+        "200":
+          description: File tree
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileTreeNode"
+  /agent/file:
+    get:
+      operationId: getAgentFileContent
+      tags: [agent]
+      summary: Get file content by path query parameter
+      parameters:
+        - name: path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Relative file path within the agent directory
+      responses:
+        "200":
+          description: File content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileContent"
+        "400":
+          description: Missing path parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /agent/compliance:
+    get:
+      operationId: getAgentCompliance
+      tags: [agent]
+      summary: Get compliance status
+      responses:
+        "200":
+          description: Compliance status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplianceStatus"
+  /agent/chat:
+    post:
+      operationId: agentChat
+      tags: [agent]
+      summary: Chat with agent (SSE stream)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentChatRequest"
+      responses:
+        "200":
+          description: SSE stream of agent response
+          content:
+            text/event-stream: {}
+  /dashboard/metrics:
+    get:
+      operationId: getDashboardMetrics
+      tags: [dashboard]
+      summary: Get dashboard KPI metrics
+      responses:
+        "200":
+          description: Metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DashboardMetric"
+  /dashboard/insights:
+    get:
+      operationId: getDashboardInsights
+      tags: [dashboard]
+      summary: Get proactive insights
+      responses:
+        "200":
+          description: Insights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DashboardInsight"
+  /dashboard/activity:
+    get:
+      operationId: getDashboardActivity
+      tags: [dashboard]
+      summary: Get agent activity feed
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityEntry"
+  /anthropic/conversations:
+    get:
+      operationId: listAnthropicConversations
+      tags: [anthropic]
+      summary: List all conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnthropicConversation"
+    post:
+      operationId: createAnthropicConversation
+      tags: [anthropic]
+      summary: Create a new conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAnthropicConversationBody"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicConversation"
+  /anthropic/conversations/{id}:
+    get:
+      operationId: getAnthropicConversation
+      tags: [anthropic]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicConversationWithMessages"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicError"
+    delete:
+      operationId: deleteAnthropicConversation
+      tags: [anthropic]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicError"
+  /anthropic/conversations/{id}/messages:
+    get:
+      operationId: listAnthropicMessages
+      tags: [anthropic]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnthropicMessage"
+    post:
+      operationId: sendAnthropicMessage
+      tags: [anthropic]
+      summary: Send a message and receive an AI response (SSE stream)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendAnthropicMessageBody"
+      responses:
+        "200":
+          description: SSE stream of assistant response chunks
+          content:
+            text/event-stream: {}
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    AgentInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        model:
+          type: object
+          properties:
+            preferred:
+              type: string
+            fallback:
+              type: array
+              items:
+                type: string
+          required:
+            - preferred
+        tools:
+          type: array
+          items:
+            type: string
+        skillNames:
+          type: array
+          items:
+            type: string
+        compliance:
+          type: object
+          properties:
+            riskLevel:
+              type: string
+            humanInTheLoop:
+              type: boolean
+            dataClassification:
+              type: string
+            regulatoryFrameworks:
+              type: array
+              items:
+                type: string
+          required:
+            - riskLevel
+            - humanInTheLoop
+            - dataClassification
+            - regulatoryFrameworks
+        soulContent:
+          type: string
+        rulesContent:
+          type: string
+        dutiesContent:
+          type: string
+      required:
+        - name
+        - version
+        - description
+        - model
+        - tools
+        - skillNames
+        - compliance
+        - soulContent
+        - rulesContent
+        - dutiesContent
+    AgentSkill:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        lastUsed:
+          type: string
+      required:
+        - name
+        - description
+        - status
+    AgentSkillDetail:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+        scripts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              content:
+                type: string
+            required:
+              - name
+              - content
+      required:
+        - name
+        - description
+        - content
+        - scripts
+    FileTreeNode:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileTreeNode"
+      required:
+        - name
+        - path
+        - type
+    FileContent:
+      type: object
+      properties:
+        path:
+          type: string
+        content:
+          type: string
+        language:
+          type: string
+      required:
+        - path
+        - content
+        - language
+    ComplianceStatus:
+      type: object
+      properties:
+        riskLevel:
+          type: string
+        humanInTheLoop:
+          type: boolean
+        dataClassification:
+          type: string
+        regulatoryFrameworks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+              lastValidated:
+                type: string
+            required:
+              - name
+              - status
+        auditLogging:
+          type: boolean
+        retentionDays:
+          type: integer
+        reviewCadence:
+          type: string
+        approvers:
+          type: array
+          items:
+            type: string
+        validationChecks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+              nextDue:
+                type: string
+            required:
+              - name
+              - status
+      required:
+        - riskLevel
+        - humanInTheLoop
+        - dataClassification
+        - regulatoryFrameworks
+        - auditLogging
+        - retentionDays
+        - reviewCadence
+        - approvers
+    AgentChatRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              content:
+                type: string
+            required:
+              - role
+              - content
+        sessionId:
+          type: string
+      required:
+        - messages
+    DashboardMetric:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        value:
+          type: string
+        change:
+          type: string
+        changeType:
+          type: string
+        trend:
+          type: string
+        detail:
+          type: string
+      required:
+        - id
+        - label
+        - value
+        - change
+        - changeType
+        - trend
+    DashboardInsight:
+      type: object
+      properties:
+        id:
+          type: string
+        severity:
+          type: string
+        headline:
+          type: string
+        summary:
+          type: string
+        category:
+          type: string
+        actionLabel:
+          type: string
+      required:
+        - id
+        - severity
+        - headline
+        - summary
+        - category
+    ActivityEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+        skill:
+          type: string
+        action:
+          type: string
+        status:
+          type: string
+      required:
+        - id
+        - timestamp
+        - skill
+        - action
+        - status
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    AnthropicConversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - createdAt
+    AnthropicMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+    CreateAnthropicConversationBody:
+      type: object
+      properties:
+        title:
+          type: string
+      required:
+        - title
+    SendAnthropicMessageBody:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+    AnthropicConversationWithMessages:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnthropicMessage"
+      required:
+        - id
+        - title
+        - createdAt
+        - messages
+    AnthropicError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

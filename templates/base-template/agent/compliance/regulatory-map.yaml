@@ -1,0 +1,38 @@
+# Compliance / policy map — generic placeholder.
+# Replace the example frameworks below with the policies or regulations that
+# apply to your domain. The /agent/compliance endpoint reads `frameworks` with
+# their `requirements`. Keep this structure.
+frameworks:
+  - name: internal-policy
+    full_name: Internal Operating Policy
+    status: compliant
+    last_validated: "2026-01-15"
+    next_review: "2026-04-15"
+    requirements:
+      - name: Data Handling Standard
+        status: current
+        last_completed: "2026-01-15"
+        next_due: "2026-04-15"
+        owner: reviewer
+      - name: Output Review Procedure
+        status: current
+        last_completed: "2026-01-15"
+        next_due: "2026-04-15"
+        owner: owner
+
+  - name: data-protection
+    full_name: Data Protection Policy
+    status: compliant
+    last_validated: "2026-02-15"
+    next_review: "2026-05-15"
+    requirements:
+      - name: PII Redaction Check
+        status: current
+        last_completed: "2026-02-15"
+        next_due: "2026-05-15"
+        owner: reviewer
+      - name: Access Control Review
+        status: in_progress
+        last_completed: "2026-02-15"
+        next_due: "2026-05-15"
+        owner: owner

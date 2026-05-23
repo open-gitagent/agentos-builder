@@ -1,0 +1,68 @@
+# =============================================================================
+# agentos-builder — a GitAgent that builds AgenticOS products.
+# Conforms to the GitAgent Protocol (Open GAP) v0.1.0. https://gitagent.sh
+# Clone this repo, point a GAP runtime (or Claude Code) at it, and it will
+# turn a domain brief into a full-stack AgenticOS built on the bundled base
+# template (templates/base-template/).
+# =============================================================================
+spec_version: "0.1.0"
+name: agentos-builder
+version: 1.0.0
+description: >
+  A meta-agent that builds production-grade AgenticOS products. It interviews
+  the user for their domain, company, and branding, then scaffolds the full
+  stack (agent definition + thin GitClaw API server + React dashboard) from the
+  bundled base template, following the Universal Journey Pattern and the
+  GitAgent Protocol.
+author: shreyas-lyzr
+license: MIT
+
+model:
+  preferred: "anthropic:claude-opus-4-7"   # building is high-reasoning work
+  fallback:
+    - "anthropic:claude-sonnet-4-6"
+  constraints:
+    temperature: 0.4
+    max_tokens: 8192
+
+# Capabilities the builder uses. Each maps to skills/<name>/SKILL.md.
+skills:
+  - scaffold-agentos
+  - design-journey
+  - author-skill
+  - model-knowledge
+  - apply-branding
+  - gap-conformance
+
+delegation:
+  mode: auto
+
+runtime:
+  max_turns: 60
+  timeout: 600
+
+tags: [meta-agent, builder, agenticos, gitagent, scaffolding, lyzr]
+
+# GAP compliance block (v0.1.0 schema: risk_tier / supervision / recordkeeping).
+compliance:
+  risk_tier: standard
+  frameworks: []
+  supervision:
+    designated_supervisor: "shreyas@lyzr.ai"
+    review_cadence: monthly
+    human_in_the_loop: conditional      # confirm before destructive/outward actions
+    override_capability: true
+    kill_switch: true
+  recordkeeping:
+    audit_logging: true
+    log_format: structured_json
+    retention_period: "1y"
+    immutable: false
+  data_governance:
+    pii_handling: redact
+    data_classification: internal
+
+metadata:
+  builds: "agenticos"
+  base_template: "templates/base-template"
+  runtime_target: "gitclaw + claude-code"

@@ -1,0 +1,28 @@
+{
+  "formatId": "bma-bscr-ebs-q",
+  "startedAt": "2026-05-11T06:19:19.149Z",
+  "completedAt": "2026-05-11T06:19:22.097Z",
+  "fetched": [
+    {
+      "url": "https://www.bma.bm/insurance/forms-and-templates",
+      "status": "cached",
+      "ms": 885,
+      "bytes": 2292
+    }
+  ],
+  "detectedVersion": "BSCR-2026-Q1-v1.2",
+  "cachedVersion": "BSCR-2025-Q4-v1.1",
+  "diffSummary": {
+    "added": 4,
+    "removed": 0,
+    "renamed": 11,
+    "ruleChanges": 1,
+    "affectedFacts": 15
+  },
+  "snapshotPath": "/home/runner/workspace/artifacts/api-server/.data/multi-filing/regulator-snapshots/bma-bscr-ebs-q/BSCR-2026-Q1-v1.2.json",
+  "remappingResult": {
+    "factsChecked": 15,
+    "mappingsValid": 15,
+    "mappingsBroken": 0
+  }
+}

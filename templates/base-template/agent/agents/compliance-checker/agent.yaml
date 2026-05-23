@@ -1,0 +1,26 @@
+# Reviewer sub-agent — checks the main agent's outputs before delivery.
+# Rename or repurpose this sub-agent for your domain. Keep the directory name
+# in sync with how the parent agent references it.
+spec_version: "0.1.0"
+name: compliance-checker
+version: 1.0.0
+description: >
+  Reviewer sub-agent. Inspects the main agent's outputs for accuracy, policy
+  adherence, and sensitive-data exposure before they are delivered to
+  stakeholders. Read-only.
+
+model:
+  preferred: "anthropic:claude-sonnet-4-20250514"
+  constraints:
+    temperature: 0.1
+    max_tokens: 2048
+
+tools: [read]
+
+skills:
+  - example-skill
+
+compliance:
+  risk_level: standard
+  human_in_the_loop: true
+  data_classification: internal

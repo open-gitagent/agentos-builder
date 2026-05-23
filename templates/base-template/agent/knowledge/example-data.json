@@ -1,0 +1,12 @@
+{
+  "_comment": "Neutral example dataset. Replace with your own reference data.",
+  "dataset": "example-data",
+  "updated": "2026-01-01",
+  "records": [
+    { "id": "R-001", "name": "Alpha", "category": "operations", "value": 1200, "status": "active" },
+    { "id": "R-002", "name": "Bravo", "category": "analysis", "value": 850, "status": "active" },
+    { "id": "R-003", "name": "Charlie", "category": "operations", "value": 430, "status": "review" },
+    { "id": "R-004", "name": "Delta", "category": "support", "value": 600, "status": "active" },
+    { "id": "R-005", "name": "Echo", "category": "analysis", "value": 1500, "status": "closed" }
+  ]
+}

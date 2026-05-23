@@ -1,0 +1,28 @@
+{
+  "formatId": "lloyds-cmr-q",
+  "startedAt": "2026-05-11T06:19:15.900Z",
+  "completedAt": "2026-05-11T06:19:19.100Z",
+  "fetched": [
+    {
+      "url": "https://www.lloyds.com/conducting-business/market-finance/managing-agents/regulatory-reporting",
+      "status": "cached",
+      "ms": 1137,
+      "bytes": 99433
+    }
+  ],
+  "detectedVersion": "CMR-2026-v1.0",
+  "cachedVersion": "CMR-2025-v1.3",
+  "diffSummary": {
+    "added": 8,
+    "removed": 0,
+    "renamed": 2,
+    "ruleChanges": 1,
+    "affectedFacts": 10
+  },
+  "snapshotPath": "/home/runner/workspace/artifacts/api-server/.data/multi-filing/regulator-snapshots/lloyds-cmr-q/CMR-2026-v1.0.json",
+  "remappingResult": {
+    "factsChecked": 13,
+    "mappingsValid": 13,
+    "mappingsBroken": 0
+  }
+}
