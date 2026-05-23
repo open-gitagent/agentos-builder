@@ -38,6 +38,45 @@ After the build passes and the user wants the UI live — either a throwaway **p
 3. **Report the URL.** Return the live `url` (and inspector URL) to the user. Confirm before a
    `prod` deploy — publishing is an outward action.
 
+## Set the deployed project's Anthropic key (required for the API)
+
+The generated app's `api-server` reads `AI_INTEGRATIONS_ANTHROPIC_API_KEY` (it
+bridges that → `ANTHROPIC_API_KEY` for GitClaw/pi-ai). The deployed project must
+have this set, or agent/chat/journey calls fail at runtime.
+
+The key is provided to you in the environment as **`DEPLOY_ANTHROPIC_API_KEY`**
+(injected service-side — never hardcode it). Push it to the Vercel project as an
+**encrypted env secret** right after the deploy, then redeploy so it takes effect.
+
+```bash
+# Guard
+[ -n "$DEPLOY_ANTHROPIC_API_KEY" ] || echo "warning: DEPLOY_ANTHROPIC_API_KEY not set — deployed app will have no Anthropic key"
+
+PROJECT="<the vercel project name you deployed>"   # e.g. acme-agenticos
+TEAM_QS="${VERCEL_TEAM_ID:+?teamId=$VERCEL_TEAM_ID}"
+
+# Set the secret on production + preview (idempotent: if it 409s as existing, PATCH it instead).
+for KEY in AI_INTEGRATIONS_ANTHROPIC_API_KEY ANTHROPIC_API_KEY; do
+  curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT/env$TEAM_QS" \
+    -H "Authorization: Bearer $VERCEL_TOKEN" -H "content-type: application/json" \
+    -d "{\"key\":\"$KEY\",\"value\":\"$DEPLOY_ANTHROPIC_API_KEY\",\"type\":\"encrypted\",\"target\":[\"production\",\"preview\"]}" \
+    >/dev/null
+done
+
+# Env vars only apply to NEW deployments — redeploy to bake them in.
+npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" --name "$PROJECT"
+```
+
+Rules:
+- Read `$DEPLOY_ANTHROPIC_API_KEY` from env. **Never** print it, echo it, or write
+  it into a file in the repo. Pass it straight to the Vercel API as above.
+- Use `type:"encrypted"` so Vercel stores it as a secret.
+- If the key already exists on the project, the POST returns 409 — re-issue as a
+  PATCH to `…/env/<envId>` (look up the id via `GET …/env`) rather than failing.
+- This only matters when the API runs on the Vercel project (serverless). If the
+  `api-server` is hosted elsewhere, set `AI_INTEGRATIONS_ANTHROPIC_API_KEY` on
+  that host instead.
+
 ## Important caveat — this deploys the FRONTEND only
 The dashboard calls `/api/*`, which is served by the **api-server** (Express + GitClaw). A static
 Vercel deployment has no backend, so the live UI will render but agent/chat/journey calls will
