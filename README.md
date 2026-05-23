@@ -15,7 +15,8 @@ Domain brief  ──►  agentos-builder  ──►  branded, domain-specific Ag
 |------|------------|
 | `agent.yaml` | GAP manifest (skills, model, compliance). |
 | `SOUL.md` / `RULES.md` / `DUTIES.md` / `AGENTS.md` | Identity, guardrails, SoD, fallback instructions. |
-| `skills/` | The build procedures: `scaffold-agentos`, `apply-branding`, `author-skill`, `model-knowledge`, `design-journey`, `gap-conformance`. |
+| `skills/` | The build procedures: `scaffold-agentos`, `apply-branding`, `author-skill`, `model-knowledge`, `design-journey`, `gap-conformance`, `publish-ui`. |
+| `tools/` | MCP-compatible tools — `vercel-deploy` (publish the built UI to Vercel via the REST API) + its `vercel-deploy.mjs` implementation. |
 | `knowledge/` | All the context: architecture, the GitAgent Protocol, the journey pattern, branding, and a template guide. |
 | `workflows/build-agentos.yaml` | A SkillsFlow that runs the build end-to-end. |
 | `templates/base-template/` | **The base template, bundled.** A clean, domain-agnostic AgenticOS (its own `CLAUDE.md` is the canonical build playbook). |

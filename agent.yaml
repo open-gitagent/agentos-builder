@@ -33,6 +33,11 @@ skills:
   - model-knowledge
   - apply-branding
   - gap-conformance
+  - publish-ui
+
+# MCP-compatible tools. Each maps to tools/<name>.yaml.
+tools:
+  - vercel-deploy
 
 delegation:
   mode: auto

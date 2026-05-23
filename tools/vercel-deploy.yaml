@@ -1,0 +1,46 @@
+# MCP-compatible tool definition (GitAgent Protocol). Deploys a prebuilt static
+# UI directory to Vercel via the REST API. Implementation: tools/vercel-deploy.mjs
+name: vercel-deploy
+description: Deploy a prebuilt static UI directory to Vercel via the REST API and return the live deployment URL.
+version: 1.0.0
+
+input_schema:
+  type: object
+  properties:
+    build_dir:
+      type: string
+      description: Path to the built static output (e.g. artifacts/dashboard/dist/public).
+    project_name:
+      type: string
+      description: Vercel project name/slug. Auto-created on first deploy.
+    prod:
+      type: boolean
+      description: Deploy to production. Omit or false for a preview deployment.
+    team_id:
+      type: string
+      description: Optional Vercel team ID (or set VERCEL_TEAM_ID).
+  required: [build_dir, project_name]
+
+output_schema:
+  type: object
+  properties:
+    url: { type: string, description: Live deployment URL. }
+    inspectorUrl: { type: string }
+    id: { type: string }
+    readyState: { type: string }
+
+implementation:
+  type: script
+  path: tools/vercel-deploy.mjs
+  runtime: node          # Node 18+ (uses global fetch)
+  timeout: 300
+
+# Reads VERCEL_TOKEN (required) and VERCEL_TEAM_ID (optional) from the environment.
+env:
+  - VERCEL_TOKEN
+  - VERCEL_TEAM_ID
+
+annotations:
+  requires_confirmation: true   # outward, hard-to-reverse action
+  read_only: false
+  cost: low

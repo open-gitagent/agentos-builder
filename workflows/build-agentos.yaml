@@ -65,3 +65,17 @@ steps:
     depends_on: [populate-ui, remove-example]
     outputs: [report]
     # pnpm run typecheck + build + smoke run; then GAP conformance report. Block delivery on failure.
+
+  - id: publish-ui
+    skill: publish-ui
+    depends_on: [verify]
+    inputs:
+      build_dir: "artifacts/dashboard/dist/public"
+      project_name: "${{ inputs.company }}-agenticos"
+      prod: false                     # preview by default; confirm before a production deploy
+    outputs: [url]
+    conditions:
+      - "inputs.publish == true"      # only when the user asked to deploy
+    # Builds the dashboard and deploys it to Vercel via the REST API (tool: vercel-deploy).
+    # Outward action — requires confirmation. Frontend-only: see skills/publish-ui (host the API
+    # server separately and point the dashboard at it before going production).
