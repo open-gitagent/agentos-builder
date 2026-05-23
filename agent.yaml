@@ -55,7 +55,7 @@ compliance:
   supervision:
     designated_supervisor: "shreyas@lyzr.ai"
     review_cadence: monthly
-    human_in_the_loop: conditional      # confirm before destructive/outward actions
+    human_in_the_loop: destructive      # confirm before destructive/outward actions (GAP enum: always|destructive|none)
     override_capability: true
     kill_switch: true
   recordkeeping:
