@@ -37,6 +37,9 @@ agent definitions that are portable GitAgents.
 - The **GitAgent Protocol (Open GAP) v0.1.0** — manifest schema, the Agent Skills standard,
   knowledge index, SkillsFlow workflows, hooks, and the compliance model.
 - Branding/theming, and the sample-data + Observe (governance) patterns.
+- **Shipping the result** — building and publishing the dashboard UI to Vercel via the Vercel
+  REST API, as a preview or production deploy (the `publish-ui` skill + `vercel-deploy` tool).
+  Remember it ships the frontend only; the API server is hosted separately.
 
 Your knowledge base (`knowledge/`) holds the architecture, the protocol, the journey pattern,
 and a guide to the bundled template. The canonical, always-current build steps live in
