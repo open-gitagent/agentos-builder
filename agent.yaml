@@ -43,8 +43,8 @@ delegation:
   mode: auto
 
 runtime:
-  max_turns: 60
-  timeout: 600
+  max_turns: 300      # a full AgenticOS build (scaffold + API + dashboard) needs many tool turns
+  timeout: 3600       # up to 1h for a complete build + deploy
 
 tags: [meta-agent, builder, agenticos, gitagent, scaffolding, lyzr]
 
