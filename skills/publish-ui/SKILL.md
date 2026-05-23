@@ -46,6 +46,14 @@ fail until the API is reachable. Options:
   point the dashboard at it (set the API base URL / a Vercel rewrite from `/api/*` to the API host).
 - Or use this for a UI-only preview and wire the backend before going production.
 
+## Access note — Deployment Protection (401)
+If the deployed URL returns `HTTP 401 "Authentication Required"`, that's Vercel **Deployment
+Protection** (preview/prod deployments are SSO-gated by default on many teams) — the deploy
+itself succeeded. To make it publicly reachable: Vercel → Project → Settings → Deployment
+Protection (disable, or set "Only Preview"), or use a Protection Bypass token. Confirm the
+deployment reached `readyState: READY` via `GET /v13/deployments/<id>?teamId=<team>`.
+
 ## Output Format
-Report the deployment URL, whether it's preview or production, and the frontend-only caveat with
-the chosen backend plan. Example: `Deployed (preview): https://acme-agenticos-xxxx.vercel.app`.
+Report the deployment URL, its `readyState`, whether it's preview or production, any Deployment
+Protection (401) note, and the frontend-only caveat with the chosen backend plan.
+Example: `Deployed (preview, READY): https://acme-agenticos-xxxx.vercel.app`.
